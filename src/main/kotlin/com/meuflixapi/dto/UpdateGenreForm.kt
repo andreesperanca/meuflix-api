@@ -1,11 +1,10 @@
 package com.meuflixapi.dto
 
-import com.meuflixapi.models.Movie
 import javax.validation.constraints.NotEmpty
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
-data class UpdateCategoryForm(
+data class UpdateGenreForm(
     @field:NotNull
     val id: Long,
     @field:NotEmpty

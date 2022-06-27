@@ -1,62 +1,52 @@
 package com.meuflixapi.service
 
-import com.meuflixapi.dto.MovieView
-import com.meuflixapi.dto.NewMovie
+import com.meuflixapi.dto.*
+import com.meuflixapi.exception.NotFoundException
 import com.meuflixapi.mapper.NewMovieForMovie
 import com.meuflixapi.mapper.MovieForMovieView
-import com.meuflixapi.models.Movie
+import com.meuflixapi.repository.GenreRepository
+import com.meuflixapi.repository.MovieRepository
 import org.springframework.stereotype.Service
 
 
 @Service
 class MovieService
     (
-    private var moviesList : List<Movie> = emptyList(),
-    private val movieViewMapper: MovieForMovieView,
-    private val movieFormMapper: NewMovieForMovie
+    private val genreRepository : GenreRepository,
+    private val repository: MovieRepository,
+    private val movieForMovieView: MovieForMovieView,
+    private val newMovieForMovie: NewMovieForMovie,
+    private val notFoundExceptionMessage : String = "Não encontrado"
     )
 {
 
-    fun findMovieById (id: Long) : Movie {
-        return moviesList.first { movie -> movie.idCategory == id }
+    fun findMovieById (id: Long) : MovieView {
+        val movie = repository.findById(id).orElseThrow {NotFoundException(notFoundExceptionMessage)}
+        return movieForMovieView.map(movie)
     }
 
-    fun listMovies(): List<MovieView> {
-        return moviesList.map { movie ->
-            movieViewMapper.map(movie)
-        }
+    fun listMovies(): List<MovieView> = repository.findAll().map { movie ->
+        movieForMovieView.map(movie)
     }
 
-    fun registerMovie(formMovie: NewMovie): MovieView {
-        val movie = movieFormMapper.map(formMovie)
-        movie.id = moviesList.size.toLong() + 1
-        moviesList = moviesList.plus(movie)
-
-        val listCategories = CategoryService.singletonList.categoriesList
-        listCategories.first { category -> category.id == movie.idCategory}.let { category ->
-            category.listMovies = category.listMovies.plus(movie)
-        }
-        return movieViewMapper.map(movie)
+    fun registerMovie(newMovie: NewMovie): MovieView {
+        val movie = newMovieForMovie.map(newMovie)
+        genreRepository.findById(newMovie.idGenre)
+            .orElseThrow{NotFoundException("Categoria não encontrada.")}.let {genre ->
+                movie.genre = genre
+            }
+        repository.save(movie)
+        return movieForMovieView.map(movie)
     }
 
-    fun updateMovie( newMovie : Movie): MovieView? {
-        val oldMovie = moviesList.first { it.id == newMovie.id }
-
-        val updateMovie = Movie(
-            id = newMovie.id,
-            idCategory = newMovie.idCategory ?: oldMovie.idCategory,
-            name = newMovie.name ?: oldMovie.name,
-            urlImage = newMovie.urlImage ?: oldMovie.urlImage,
-            cast = newMovie.cast ?: oldMovie.cast,
-            description = newMovie.description ?: oldMovie.description
-        )
-
-        moviesList = moviesList.minus(oldMovie).plus(updateMovie)
-        return movieViewMapper.map(updateMovie)
+    fun updateMovie( newMovie : UpdateMovieForm): MovieView {
+        val movie = repository.findById(newMovie.id).orElseThrow{NotFoundException(notFoundExceptionMessage)}
+        movie.title = newMovie.title
+        movie.imageLink = newMovie.imageLink
+        movie.actors = newMovie.actors
+        movie.review = newMovie.review
+        return movieForMovieView.map(movie)
     }
 
-    fun deleteMovie(id: Long) {
-        val movie = moviesList.first { movie-> movie.id == id }
-        moviesList = moviesList.minus(movie)
-    }
+    fun deleteMovie(id: Long) = repository.deleteById(id)
 }

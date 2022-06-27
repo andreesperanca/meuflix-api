@@ -1,10 +1,15 @@
 package com.meuflixapi.models
 
-data class Movie (
-    var id : Long?,
-    val idCategory : Long,
-    val name : String,
-    val urlImage : String,
-    val cast : String,
-    val description : String
+import javax.persistence.*
+
+@Entity
+data class Movie(
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id : Long? = null,
+    @ManyToOne
+    var genre: Genre?,
+    var title : String,
+    var imageLink : String,
+    var actors :  String,
+    var review : String
     )

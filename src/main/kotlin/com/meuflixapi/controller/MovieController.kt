@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
+import javax.transaction.Transactional
 import javax.validation.Valid
 
 
@@ -20,7 +21,7 @@ class MovieController
 {
 
     @GetMapping("/{id}")
-    fun findMovieById(@PathVariable id: Long): Movie {
+    fun findMovieById(@PathVariable id: Long): MovieView {
         return service.findMovieById(id)
     }
 
@@ -29,6 +30,7 @@ class MovieController
     fun listMovies() : List<MovieView> = service.listMovies()
 
     @PostMapping
+    @Transactional
     fun registerMovie (@RequestBody @Valid formMovie: NewMovie, uriBuilder : UriComponentsBuilder)
             : ResponseEntity<MovieView> {
         val movieView = service.registerMovie(formMovie)
@@ -37,12 +39,14 @@ class MovieController
     }
 
     @PutMapping
-    fun updateCategories(@RequestBody @Valid movie: Movie): ResponseEntity<MovieView> {
-        val movieView = service.updateMovie(movie)
+    @Transactional
+    fun updateCategories(@RequestBody @Valid updateMovie: UpdateMovieForm): ResponseEntity<MovieView> {
+        val movieView = service.updateMovie(updateMovie)
         return ResponseEntity.ok(movieView)
     }
 
     @DeleteMapping("/{id}")
+    @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteCategory(@PathVariable id: Long) {
         service.deleteMovie(id)

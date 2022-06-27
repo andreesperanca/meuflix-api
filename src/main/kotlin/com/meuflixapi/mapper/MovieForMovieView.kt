@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component
 class MovieForMovieView: Mapper<Movie, MovieView>
 {
     override fun map(t: Movie): MovieView =
-        MovieView(id = t.id, name = t.name, idCategory = t.idCategory, urlImage = t.urlImage, cast = t.cast
-            , description = t.description)
+        MovieView(id = t.id, name = t.title, genre = "Olá", urlImage = t.imageLink, cast = t.actors
+            , description = t.review)
 }
