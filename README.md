@@ -11,7 +11,7 @@ Tabela de conteúdos
 
 
 ## Sobre :book:
-
+API REST utilizada como Back-end da aplicação Meuflix, com dois endpoints [ movies e genres ] feita utilizando Spring Boot + Kotlin e persistência de dados com MySQL
 
 ## Tecnologias :rocket:
 
