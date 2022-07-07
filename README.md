@@ -30,7 +30,7 @@ As seguintes ferramentas estão sendo utilizadas no desenvolvimento do projeto:
 - [x] Dois endpoints [ movies e genres ].
 - [x] Spring Data JPA para a camada de persistência da API.
 - [x] Flyway como ferramenta de migrations.
-- [x] implementação do banco de dados MySQL.
+- [x] Implementação do banco de dados MySQL.
 
 ## Autor
 
