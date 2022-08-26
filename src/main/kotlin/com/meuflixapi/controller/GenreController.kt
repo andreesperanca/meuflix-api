@@ -13,7 +13,7 @@ import javax.validation.Valid
 
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/genres")
 class GenreController (private val service : GenreService){
 
     @GetMapping("/{id}")
