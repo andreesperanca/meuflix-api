@@ -7,6 +7,7 @@ import com.meuflixapi.mapper.MovieForMovieView
 import com.meuflixapi.repository.GenreRepository
 import com.meuflixapi.repository.MovieRepository
 import org.springframework.stereotype.Service
+import java.util.stream.Collectors
 
 
 @Service
@@ -25,10 +26,16 @@ class MovieService
         return movieForMovieView.map(movie)
     }
 
-    fun listMovies(): List<MovieView> = repository.findAll().map { movie ->
-        movieForMovieView.map(movie)
+    fun listMovies(genreName : String?): List<MovieView> {
+        val movies = if (genreName == null) {
+            repository.findAll()
+        } else {
+            repository.findByGenreTitle(genreName)
+        }
+        return movies.stream().map { movie ->
+            movieForMovieView.map(movie)
+        }.collect(Collectors.toList())
     }
-
     fun registerMovie(newMovie: NewMovie): MovieView {
         val movie = newMovieForMovie.map(newMovie)
         genreRepository.findById(newMovie.idGenre)
@@ -41,6 +48,7 @@ class MovieService
 
     fun updateMovie( newMovie : UpdateMovieForm): MovieView {
         val movie = repository.findById(newMovie.id).orElseThrow{NotFoundException(notFoundExceptionMessage)}
+
         movie.title = newMovie.title
         movie.imageLink = newMovie.imageLink
         movie.actors = newMovie.actors

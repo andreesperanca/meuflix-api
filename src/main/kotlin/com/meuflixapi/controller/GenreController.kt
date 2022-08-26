@@ -13,38 +13,38 @@ import javax.validation.Valid
 
 
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("/genres")
 class GenreController (private val service : GenreService){
 
     @GetMapping("/{id}")
-    fun findCategoryById(@PathVariable id: Long): GenreView {
-        return service.findCategoryById(id)
+    fun findGenreById(@PathVariable id: Long): GenreView {
+        return service.findGenreById(id)
     }
 
     @GetMapping
-    fun listCategories() : List<GenreView> = service.listCategories()
+    fun listGenre(@RequestParam(required = false) genreName: String?) : List<GenreView> = service.listGenre(genreName)
 
     @PostMapping
     @Transactional
-    fun registerCategory (@RequestBody @Valid formCategory: NewGenre, uriBuilder : UriComponentsBuilder)
+    fun registerGenre (@RequestBody @Valid formCategory: NewGenre, uriBuilder : UriComponentsBuilder)
     : ResponseEntity<GenreView> {
         val categoryView = service.register(formCategory)
-        val uri = uriBuilder.path("/categories/${categoryView.id}").build().toUri()
+        val uri = uriBuilder.path("/genres/${categoryView.id}").build().toUri()
         return ResponseEntity.created(uri).body(categoryView)
     }
 
     @PutMapping
     @Transactional
-    fun updateCategories(@RequestBody @Valid formCategory: UpdateGenreForm): ResponseEntity<GenreView> {
-        val topicoView = service.updateCategories(formCategory)
+    fun updateGenre(@RequestBody @Valid formCategory: UpdateGenreForm): ResponseEntity<GenreView> {
+        val topicoView = service.updateGenre(formCategory)
         return ResponseEntity.ok(topicoView)
     }
 
     @DeleteMapping("/{id}")
     @Transactional
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    fun deleteCategory(@PathVariable id: Long) {
-        service.deleteCategory(id)
+    fun deleteGenre(@PathVariable id: Long) {
+        service.deleteGenre(id)
     }
 
 }

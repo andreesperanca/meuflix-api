@@ -8,6 +8,8 @@ import com.meuflixapi.mapper.GenreForGenreView
 import com.meuflixapi.mapper.NewGenreViewForGenre
 import com.meuflixapi.repository.GenreRepository
 import org.springframework.stereotype.Service
+import org.springframework.web.bind.annotation.RequestParam
+import java.util.stream.Collectors
 
 @Service
 class GenreService(
@@ -17,19 +19,20 @@ class GenreService(
     private val repository: GenreRepository
 ) {
 
-    public val repository1
-    get() = this.repository
-
-
-    fun findCategoryById (id: Long) : GenreView {
+    fun findGenreById (id: Long) : GenreView {
         val genre  = repository.findById(id).orElseThrow {NotFoundException(notFoundMessage)}
         return genreForGenreView.map(genre)
     }
 
-    fun listCategories(): List<GenreView> {
-        return repository.findAll().map { category ->
-            genreForGenreView.map(category)
+    fun listGenre(genreName: String?): List<GenreView> {
+        val genres = if(genreName == null) {
+            repository.findAll()
+        } else {
+            repository.findByTitle(genreName)
         }
+
+        return genres.stream().map { category ->
+            genreForGenreView.map(category) }.collect(Collectors.toList())
     }
 
     fun register(formCategory: NewGenre): GenreView {
@@ -38,13 +41,13 @@ class GenreService(
         return genreForGenreView.map(genre)
     }
 
-    fun updateCategories(formCategory: UpdateGenreForm): GenreView? {
+    fun updateGenre(formCategory: UpdateGenreForm): GenreView? {
         val genre = repository.findById(formCategory.id).orElseThrow {NotFoundException(notFoundMessage)}
         genre.title = formCategory.name
         return genreForGenreView.map(genre)
     }
 
-    fun deleteCategory(id: Long) {
+    fun deleteGenre(id: Long) {
         val genre = repository.findById(id).orElseThrow { NotFoundException(notFoundMessage) }
         genre.listMovies = emptyList()
         repository.deleteById(id)

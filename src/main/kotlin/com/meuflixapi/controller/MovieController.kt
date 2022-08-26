@@ -27,7 +27,7 @@ class MovieController
 
 
     @GetMapping
-    fun listMovies() : List<MovieView> = service.listMovies()
+    fun listMovies(@RequestParam(required = false) genreName : String?) : List<MovieView> = service.listMovies(genreName)
 
     @PostMapping
     @Transactional

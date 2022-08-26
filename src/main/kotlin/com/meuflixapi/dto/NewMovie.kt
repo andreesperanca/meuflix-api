@@ -6,7 +6,7 @@ import javax.validation.constraints.Size
 
 data class NewMovie(
     @field:NotEmpty(message = "Campo nome não pode ser vazio.")
-    @field:Size(min = 1, max = 25, message = "Nome deve ter entre 1 e 25 caracteres")
+    @field:Size(min = 1, max = 100, message = "Nome deve ter entre 1 e 25 caracteres")
     val name: String,
     @field:NotNull
     val id: Long,
